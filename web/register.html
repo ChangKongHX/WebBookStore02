@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <link type="text/css" rel="stylesheet" href="css/style.css" />
+    <script type="text/javascript">
+        var xmlHttp = null;
+        function createXMLHttpRequest(){    //创建XMLHttpRequest对象
+            //在IE浏览器下创建
+            try{
+                xmlHttp = new ActiveXObject("Msxm12.XMLHTTP");
+            }
+            catch(e){
+                try{
+                    xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
+                }
+                catch(oc){
+                    xmlHttp = null;
+                }
+            }
+            //非IE浏览器
+            if(!xmlHttp && typeof XMLHttpRequest !="undefined"){
+                xmlHttp = new XMLHttpRequest();
+            }
+        }
+        //用户名检测
+        function checkUserName() {
+            var userName = document.getElementById("userName").value;     //通过ID得到用户名
+            var url = "checkLogin/CheckUserName.jsp?userName="+userName;
+            createXMLHttpRequest();         //创建核心对象
+            xmlHttp.onreadystatechange = callBackName;          //指定回调函数
+            xmlHttp.open("GET",url,true);
+            xmlHttp.send(null);
+        }
+        //密码检测
+        function checkPass() {
+            var pass = document.getElementById("passWord").value;
+            if(pass.length<=0){
+                document.getElementById("verifyPass").innerHTML="<font color='red'>密码不能为空！</font>";
+            }else if(pass.length<6&&pass.length>0){
+                document.getElementById("verifyPass").innerHTML="<font color='red'>密码长度必须大于6位！</font>";
+            }else{
+                document.getElementById("verifyPass").innerHTML="<font color='green'>√</font>";
+            }
+        }
+        //重复密码检测
+        function reCheckPass() {
+            var pass = document.getElementById("passWord").value;
+            var rePass = document.getElementById("rePassWord").value;
+            if(rePass==null||rePass.length<=0){
+                document.getElementById("reVerifyPass").innerHTML="<font color='red'>密码不能为空！</font>";
+            }else if(rePass==pass){
+                document.getElementById("reVerifyPass").innerHTML="<font color='green'>√</font>";
+            }else {
+                document.getElementById("reVerifyPass").innerHTML="<font color='red'>两次密码不一致！</font>";
+            }
+        }
+        //验证邮箱
+        function checkEmail() {
+            var email = document.getElementById("email").value; //获取邮箱地址
+            if(!/^([a-z0-9A-Z]+[-|\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\.)[a-zA-Z]{2,}$/.test(email)) {   //正则表达式
+                document.getElementById("verifyEmail").innerHTML="<font color='red'>邮箱格式错误！</font>";
+            }else{
+                document.getElementById("verifyEmail").innerHTML="<font color='green'>√</font>";
+            }
+        }
+        //用户名回调函数
+        function callBackName() {
+            //alert(xmlHttp.status);
+            if(xmlHttp.readyState==4){
+                //只处理正常返回
+                if(xmlHttp.status==200){
+                    var result = xmlHttp.responseText;
+                    if(result.indexOf("kong")!=-1){//为空
+                        document.getElementById("verifyUserName").innerHTML="<font color='red'>用户名不能为空</font>";
+                    }else if(result.indexOf("true")!=-1){//用名存在
+                        document.getElementById("verifyUserName").innerHTML="<font color='red'>用户名已存在</font>";
+                    }else if(result.indexOf("false")!=-1){//用户名不存在
+                        document.getElementById("verifyUserName").innerHTML="<font color='green'>可用用户名</font>";
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+<div id="header" class="wrap">
+    <div id="logo"></div>
+    <div id="navbar">
+        <form method="get" name="search" action="">
+            搜索：<input class="input-text" type="text" name="keywords" /><input class="input-btn" type="submit" name="submit" value="" />
+        </form>
+    </div>
+</div>
+<div id="register">
+    <div class="title">
+        <h2>欢迎注册JustABookStore网上书城</h2>
+    </div>
+    <div class="steps">
+        <ul class="clearfix">
+            <li class="current">1.填写注册信息</li>
+            <li class="unpass">2.注册成功</li>
+        </ul>
+    </div>
+    <form method="post" action="checkLogin/userRegister.jsp">
+        <dl>
+            <dt>用 户 名：</dt>
+            <dd><input class="input-text" type="text" name="userName" id="userName" onblur="checkUserName();"/><span id="verifyUserName"></span></dd>
+            <dt>密　　码：</dt>
+            <dd><input class="input-text" type="password" name="passWord" id="passWord" onblur="checkPass();"/><span id="verifyPass"></span></dd>
+            <dt>确认密码：</dt>
+            <dd><input class="input-text" type="password" name="rePassWord" id="rePassWord" onblur="reCheckPass();"/><span id="reVerifyPass"></span></dd>
+            <dt>Email地址：</dt>
+            <dd><input class="input-text" type="text" name="email" id="email" onblur="checkEmail();"/><span id="verifyEmail"></span></dd>
+            <dt></dt>
+            <dd class="button"><input class="input-reg" type="submit" name="register" value="" /></dd>
+        </dl>
+    </form>
+</div>
+<div id="footer" class="wrap">
+    JustABookStore &copy; 版权所有
+</div>
+</body>
+</html>

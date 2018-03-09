@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>欢迎登陆</title>
+    <link type="text/css" rel="stylesheet" href="css/style.css" />
+    <script language="JavaScript">
+        var xmlHttp = null;
+        function createXMLHttpRequest(){    //创建XMLHttpRequest对象
+            //在IE浏览器下创建
+            try{
+                xmlHttp = new ActiveXObject("Msxm12.XMLHTTP");
+            }
+            catch(e){
+                try{
+                    xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
+                }
+                catch(oc){
+                    xmlHttp = null;
+                }
+            }
+            //非IE浏览器
+            if(!xmlHttp && typeof XMLHttpRequest !="undefined"){
+                xmlHttp = new XMLHttpRequest();
+            }
+        }
+        function checkUserName() {
+            var userName = document.getElementById("userName").value;     //通过ID得到用户名
+            //alert(userName);
+            var url = "checkLogin/CheckUserName.jsp?userName="+userName;
+            createXMLHttpRequest();         //创建核心对象
+            xmlHttp.onreadystatechange = callBackName;          //指定回调函数
+            xmlHttp.open("GET",url,true);
+            xmlHttp.send(null);
+        }
+        //回调函数
+        function callBackName() {
+            //alert(xmlHttp.status);
+            if(xmlHttp.readyState==4){
+                //只处理正常返回
+                if(xmlHttp.status==200){
+                    var result = xmlHttp.responseText;
+                    if(result.indexOf("kong")!=-1){//为空
+                        document.getElementById("verifyUserName").innerHTML="<font color='red'>用户名不能为空</font>";
+                    }else if(result.indexOf("true")!=-1){//用名存在
+                        document.getElementById("verifyUserName").innerHTML="<font color='green'>用户名存在</font>";
+                    }else if(result.indexOf("false")!=-1){//用户名不存在
+                        document.getElementById("verifyUserName").innerHTML="<font color='red'>用户名不存在</font>";
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+<div id="header" class="wrap">
+    <div id="logo">JustABookStore网上书城</div>
+    <div id="navbar">
+        <form method="get" name="search" action="">
+            搜索：<input class="input-text" type="text" name="keywords" /><input class="input-btn" type="submit" name="submit" value="" />
+        </form>
+    </div>
+</div>
+<div id="login">
+    <h2>用户登陆</h2>
+    <form method="post" action="checkLogin/loginCheck.jsp">
+        <dl>
+            <dt>用户名：</dt>
+            <dd><input class="input-text" type="text" name="userName" id="userName" onblur="checkUserName()" /><span id="verifyUserName"></span></dd>
+            <dt>密　码：</dt>
+            <dd><input class="input-text" type="password" name="passWord"  id="passWord" onblur="checkPassWord()"/><span id="verifyPassWord"></span></dd>
+            <dt></dt>
+            <dd class="button"><input class="input-btn" type="submit" name="submit" value="" /><input class="input-reg" type="button" name="register" value="" onclick="window.location='register.html';" /></dd>
+        </dl>
+    </form>
+</div>
+<div id="footer" class="wrap">
+    JustABookStore &copy; 版权所有
+</div>
+</body>
+</html>
+
